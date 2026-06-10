@@ -138,3 +138,7 @@ env/
 # Pythonのキャッシュファイル
 __pycache__/
 *.pyc
+
+# 個人的な学習ログやタスクの管理ノート
+to-do_note.md
+study_note.md
