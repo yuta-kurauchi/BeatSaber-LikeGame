@@ -515,6 +515,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1216147347}
   - component: {fileID: 1216147348}
+  - component: {fileID: 1216147349}
   m_Layer: 0
   m_Name: UDPReceiver
   m_TagString: Untagged
@@ -562,6 +563,18 @@ MonoBehaviour:
     middleVec: []
     isRight: 0
   initWristPos: {x: 0, y: 0, z: 0}
+--- !u!114 &1216147349
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1216147346}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c5d6a3982e31bc4787b1c8eb6ef23ec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PythonController
 --- !u!1 &169303001695404242
 GameObject:
   m_ObjectHideFlags: 0

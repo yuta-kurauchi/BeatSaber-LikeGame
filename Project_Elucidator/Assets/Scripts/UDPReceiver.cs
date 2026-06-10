@@ -46,7 +46,8 @@ public class UDPReceiver : MonoBehaviour
     {
         lock(lockObj)
         {
-            if(latestData != null)
+            // データ自体が存在し、かつ各種ベクトルの中身がちゃんと入っている時だけ処理する
+            if (latestData != null && latestData.palmNormal != null && latestData.middleVec != null)
             {
                 Debug.Log(latestData.PalmNormal);
             }

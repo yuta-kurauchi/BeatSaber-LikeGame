@@ -32,12 +32,15 @@ public class TrackingManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(uDPReceiver.latestData != null && uDPReceiver.latestData.isRight)
+        // 修正前: if(uDPReceiver.latestData != null && uDPReceiver.latestData.isRight)
+        // ⬇️ 修正後:
+        if (uDPReceiver.latestData != null && uDPReceiver.latestData.palmNormal != null && uDPReceiver.latestData.isRight)
         {
             // 差分計算
             Vector3 diff = uDPReceiver.latestData.WristPos - uDPReceiver.initWristPos;
             // x軸の反転修正
-            diff.x *= -1;
+            // Tasks API移行に伴い、x軸の向きが一致したため、ここの反転処理（-1掛け）をコメントアウトします
+            // diff.x *= -1;
             // 剣の初期座標に差分を足す
             transform.position = swordInitPos + diff * scale;
             // 回転角を計算
