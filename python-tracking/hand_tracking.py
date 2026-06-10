@@ -105,7 +105,7 @@ mesh_drawing_spec = mp_drawing.DrawingSpec(thickness = 2, color = (0, 255, 0)) #
 mark_drawing_spec = mp_drawing.DrawingSpec(thickness = 2, circle_radius = 1, color = (0, 0, 255)) # 赤の点でランドマークを表示
 
 # カメラの読み込み(0番を指定)
-cap = cv2.VideoCapture(1)
+cap = cv2.VideoCapture(0)
 
 # ソケットのインスタンス化
 init_udp_socket()

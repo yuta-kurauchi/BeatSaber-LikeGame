@@ -122,3 +122,19 @@ InitTestScene*.unity*
 # ※注意：もしサンプルシーンが動かなくなる場合は、
 # 上記の「*.dll」等の行の先頭に「#」を付けてコメントアウトしてください。
 # 基本的にPackageCacheやLibrary経由のものはIgnoreして問題ありません。
+
+# ==========================================
+# Python Virtual Environment (venv) & Tasks API
+# ==========================================
+# Pythonの仮想環境フォルダを完全に無視
+venv/
+ENV/
+env/
+
+# Tasks APIで今後必要になるAIモデルファイル（巨大なバイナリ）
+# ※これらはGitHubではなく、ローカルに各自ダウンロードして配置するためIgnoreします
+*.task
+
+# Pythonのキャッシュファイル
+__pycache__/
+*.pyc
