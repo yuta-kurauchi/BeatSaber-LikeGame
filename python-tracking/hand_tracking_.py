@@ -25,6 +25,7 @@ def init_udp_socket():
         print(f"UDP初期化失敗: {e}")
         return False
 
+# unityへ送信
 def send_to_unity(message):
     if not udp_sock:
         return False
@@ -41,6 +42,7 @@ alpha = 0.2
 smoothed_vector = {0: None, 1: None, 9: None, 17: None}
 Smoothed_vector = {0: None}
 
+# numpyベクトルで平滑化
 def to_np(lm_x, lm_y, lm_z, id, is_world=True):
     raw_vector = np.array([lm_x, lm_y, lm_z])
     target_dict = smoothed_vector if is_world else Smoothed_vector
@@ -50,6 +52,7 @@ def to_np(lm_x, lm_y, lm_z, id, is_world=True):
     else:
         target_dict[id] = alpha * raw_vector + (1 - alpha) * target_dict[id]
     return target_dict[id]
+
 
 def scale(Pos_np, h, w):
     scale_np = Pos_np.copy()
@@ -101,7 +104,7 @@ with vision.HandLandmarker.create_from_options(options) as landmarker:
         if not success:
             continue
 
-        # OpenCVはBGRなのでRGBに変換、および左右反転
+        # OpenCVはBGRなのでRGBに変換
         image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         height, width, _ = image.shape
 
@@ -110,6 +113,7 @@ with vision.HandLandmarker.create_from_options(options) as landmarker:
 
         # 検出実行（新仕様の呼び出し方）
         results = landmarker.detect(mp_image)
+        # 検出してからイメージを反転
         image = cv2.flip(image, 1)
 
         # 描画用にBGRに戻す
@@ -130,6 +134,7 @@ with vision.HandLandmarker.create_from_options(options) as landmarker:
             wrist_np_notWorld = to_np(wrist_normal.x, wrist_normal.y, wrist_normal.z, 0, is_world=False)
             
             # リアルスケール座標計算
+            # これのせいでカメラの比によって移動が異なる
             wristPos_rial = scale(wrist_np_notWorld, height, width)
 
             # 各指への相対ベクトル計算
