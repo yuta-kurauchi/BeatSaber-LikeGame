@@ -1,4 +1,11 @@
 {
     "python-envs.defaultEnvManager": "ms-python.python:system",
-    "python-envs.defaultPackageManager": "ms-python.python:pip"
+    "python-envs.defaultPackageManager": "ms-python.python:pip",
+
+    // VS Codeに「仮想環境を探す追加のルートフォルダ」を教えてあげる
+    "python.venvFolders": [
+        "python-tracking"
+    ],
+    // Windows側でのデフォルトのインタープリターのパスを相対で指定しておく
+    "python.defaultInterpreterPath": "python-tracking/venv/Scripts/python.exe"
 }
