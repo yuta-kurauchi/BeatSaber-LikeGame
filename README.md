@@ -57,7 +57,8 @@ pip install -r requirements.txt
 2. AI モデルファイルの配置
 GoogleのMediaPipe公式リポジトリから、最新の手の骨格検出用モデルファイルをダウンロードし、`python-tracking/`フォルダの直下に配置してください。
 - ファイル名: `hand_landmarker.task`
-- <a herf="https://developers.google.com/edge/mediapipe/solutions/vision/hand_landmarker#models">公式ダウンロードページリンク</a>
+- [Hand landmarks detection guide]("https://developers.google.com/edge/mediapipe/solutions/vision/hand_landmarker#models") -> Models
+Models -> HandLandmarker (full)からダウンロード
 3. Unityの起動と実行
     1. Unity Hub から `Project_Elucidator` フォルダを Unity Editor（バージョン: 6000.3.9f1）で開きます。
     2. Assets/Scenes/SampleScene を開きます。
