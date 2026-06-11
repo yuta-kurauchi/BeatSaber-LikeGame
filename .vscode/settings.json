@@ -6,6 +6,6 @@
     "python.venvFolders": [
         "python-tracking"
     ],
-    // Windows側でのデフォルトのインタープリターのパスを相対で指定しておく
+    // デフォルトのインタープリターのパスを相対で指定しておく
     "python.defaultInterpreterPath": "python-tracking/venv/Scripts/python.exe"
 }

@@ -33,11 +33,21 @@
 | 構成要素 | バージョン / 指定スペック | 備考 |
 | :--- | :--- | :--- |
 | **Unity Editor** | `6000.3.9f1` (Unity 6) | Universal Render Pipeline (URP) 構成 |
-| **Python** | `3.12.x` (または `3.13.x`) | PCローカル環境のPythonを使用 |
+| **Python** | `3.12` | `python-tracking`直下の`mise.toml`での導入 |
 | **仮想環境** | Python標準 `venv` | プロジェクト内の `/python-tracking/venv/` に配置 |
 | **MediaPipe** | `最新の安定版 (Tasks API対応)` | 旧レガシーソリューション (`mp.solutions`) から完全脱却 |
 | **AI学習モデル** | `hand_landmarker.task` | Google公式の学習済みバイナリモデル（ローカル配置） |
 | **通信プロトコル** | `UDP (User Datagram Protocol)` | IP: `127.0.0.1` / Port: `50001` (JSONパッキング) |
+
+### インタプリタの設定
+- **問題**: 
+  - BeatSaber-LikeGameをルートとして開いていると、正しく`venv`のpython(`python.exe`)がインタプリタとして認識されないときがある。
+  - mediapipeなどのライブラリがインポートできない。という問題が生じる
+- **解決策**
+  インタプリタの選択から直接ファイル(`venv/Scripts/python.exe`)を選択する必要がある。
+
+なお、unityから動かす場合は問題なく動くので気にしなくてよい。
+あくまで開発時にpythonだけで動作確認をする際の注意である。
 
 ---
 
