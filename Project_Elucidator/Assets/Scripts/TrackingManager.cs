@@ -1,5 +1,3 @@
-using System.Net.Sockets;
-using JetBrains.Annotations;
 using UnityEngine;
 
 public class TrackingManager : MonoBehaviour
@@ -11,17 +9,17 @@ public class TrackingManager : MonoBehaviour
 
     #region var-Internal 
     UDPReceiver uDPReceiver;
-    Vector3 swordInitPos;
-    float scale = 0.01f;
+    TrackingData handData;
     Transform _transform;
+    Camera _mainCamera;
     #endregion
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         // スクリプトを取得
         uDPReceiver = receiver.GetComponent<UDPReceiver>();
-        // 初期座標の記録
-        swordInitPos = transform.position;
+        // メインカメラの取得
+        _mainCamera = Camera.main;
     }
 
     void Awake()
@@ -32,22 +30,17 @@ public class TrackingManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        // 修正前: if(uDPReceiver.latestData != null && uDPReceiver.latestData.isRight)
-        // ⬇️ 修正後:
-        if (uDPReceiver.latestData != null && uDPReceiver.latestData.palmNormal != null && uDPReceiver.latestData.isRight)
+        // Debug.Log("handdataがnullです");
+        // 窓口経由で最新のデータをコピー
+        handData = uDPReceiver.GetLatestData();
+        if (handData != null && handData.isRight)
         {
-            // 差分計算
-            Vector3 diff = uDPReceiver.latestData.WristPos - uDPReceiver.initWristPos;
-            // x軸の反転修正
-            // Tasks API移行に伴い、x軸の向きが一致したため、ここの反転処理（-1掛け）をコメントアウトします
-            // diff.x *= -1;
-            // 剣の初期座標に差分を足す
-            transform.position = swordInitPos + diff * scale;
+            Vector3 viewportPos = handData.WristPos;
+            // zだけ変更,zがカメラからの距離を表す。
+            viewportPos.z = 5.0f;
+            _transform.position = _mainCamera.ViewportToWorldPoint(viewportPos);
             // 回転角を計算
-            Quaternion baseRot = Quaternion.LookRotation(uDPReceiver.latestData.MiddleVec, -uDPReceiver.latestData.PalmNormal);
-            // Vector3 eulerAngle = baseRot.eulerAngles;
-            // // オフセット
-            // Quaternion offsetRot = Quaternion.Euler(0, 0, 120f);
+            Quaternion baseRot = Quaternion.LookRotation(handData.MiddleVec, handData.PalmNormal);
             _transform.rotation = baseRot;
         }
     }

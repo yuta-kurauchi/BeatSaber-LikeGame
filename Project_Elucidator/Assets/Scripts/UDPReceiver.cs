@@ -44,15 +44,27 @@ public class UDPReceiver : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        lock(lockObj)
+        // // 同時にアクセスできない
+        // lock(lockObj)
+        // {
+        //     // データ自体が存在し、かつ各種ベクトルの中身がちゃんと入っている時だけ処理する
+        //     if (latestData != null && latestData.palmNormal != null && latestData.middleVec != null)
+        //     {
+        //         Debug.Log(latestData.PalmNormal);
+        //     }
+        // }
+    }
+
+    #region GetLatestData
+    // 安全なデータ貸し出し窓口
+    public TrackingData GetLatestData()
+    {
+        lock (lockObj)
         {
-            // データ自体が存在し、かつ各種ベクトルの中身がちゃんと入っている時だけ処理する
-            if (latestData != null && latestData.palmNormal != null && latestData.middleVec != null)
-            {
-                Debug.Log(latestData.PalmNormal);
-            }
+            return latestData;
         }
     }
+    #endregion
 
     #region
     void StartReceiving()
@@ -84,29 +96,26 @@ public class UDPReceiver : MonoBehaviour
         // どのIPadress、どのport番号からでも受信できるようにEndPointを初期化
         // EndPointってなんやねん
         IPEndPoint remoteEndPoint = new IPEndPoint(IPAddress.Any, 0);
-
+        // Debug.Log(isReceiving);
         while (isReceiving)
         {
             try
             {
+                Debug.Log(1);
                 // データの受信、バイト型の配列としてdataに受け取る。
                 // remoteEndPointをrefで渡すことで、送信元を取得?
                 byte[] data = udpClient.Receive(ref remoteEndPoint);
                 // dataをjson形式に戻す
                 string jsonString = Encoding.UTF8.GetString(data);
                 /*更新中は外部からの操作(読み取りとか)を受け付けない。*/
-                
+                Debug.Log(2);
                 // json形式をTrackingData classに変換
                 tempData = JsonConvert.DeserializeObject<TrackingData>(jsonString);
 
-                if(receiveCount == 0)
-                {
-                    receiveCount = 1;
-                    initWristPos.z = tempData.WristPos.z;
-                    initWristPos.x = 320;
-                    initWristPos.y = -240;
-                }
+                Debug.Log(3);
+                Debug.Log(tempData.PalmNormal);
 
+                // スレッド内のデータなので同時にアクセスできないようにする
                 lock(lockObj)
                 {
                     latestData = tempData;
@@ -152,12 +161,12 @@ public class TrackingData
     [JsonProperty("palmNormal")]
     public List<float> palmNormal;
     [JsonIgnore]
-    public Vector3 PalmNormal => new Vector3(-palmNormal[0], palmNormal[1], palmNormal[2]);
+    public Vector3 PalmNormal => new Vector3(palmNormal[0], palmNormal[1], palmNormal[2]);
     // 中指へのベクトル
     [JsonProperty("middleVec")]
     public List<float> middleVec;
     [JsonIgnore]
-    public Vector3 MiddleVec => new Vector3(-middleVec[0], middleVec[1], middleVec[2]);
+    public Vector3 MiddleVec => new Vector3(middleVec[0], middleVec[1], middleVec[2]);
     // 右手かどうかのラベル
     [JsonProperty("isRight")]
     public bool isRight;
