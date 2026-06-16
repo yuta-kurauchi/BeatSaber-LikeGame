@@ -106,24 +106,6 @@ InitTestScene*.unity*
 /[Aa]ssets/[Ss]ceneDependencyCache*
 
 # ==========================================
-# MediaPipe Unity Plugin Specific Ignores
-# ==========================================
-# MediaPipeの自動生成キャッシュや内部ビルド用フォルダ
-/Formulas/
-/Workspace/
-/.bazel*
-
-# プラグインが自動生成・ロードする外部のネイティブライブラリ等
-*.dll
-*.so
-*.dylib
-*.aar
-
-# ※注意：もしサンプルシーンが動かなくなる場合は、
-# 上記の「*.dll」等の行の先頭に「#」を付けてコメントアウトしてください。
-# 基本的にPackageCacheやLibrary経由のものはIgnoreして問題ありません。
-
-# ==========================================
 # Python Virtual Environment (venv) & Tasks API
 # ==========================================
 # Pythonの仮想環境フォルダを完全に無視

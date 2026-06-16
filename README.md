@@ -1,37 +1,38 @@
 # BeatSaber-LikeGame⚔️
 ### ⚠️ 開発中 ⚠️
 
-リアルタイム・ハンドトラッキング技術を融合させた、マルチプラットフォーム対応の次世代3Dスタイリッシュ・アクションゲーム（BeatSaber-Like Hand Game）のプロトタイプ基盤リポジトリです。
+リアルタイム・ハンドトラッキング技術を融合させた、マルチプラットフォーム対応予定の3Dアクションゲーム（BeatSaber-Like Hand Game）のプロトタイプ基盤リポジトリです。
 
-最新の AI 骨格認識エンジン **MediaPipe Tasks API** をスタンドアロンプロセスとして裏で動作させ、Unity 6 と超低遅延UDP通信を行うことで、プレイヤーの手の動きをゲーム内のオブジェクトへ完全に1:1で完全同期させます。
+AI 骨格認識エンジン **MediaPipe Tasks API** をスタンドアロンプロセスとして裏で動作させ、Unity 6 とUDP通信を行うことで、プレイヤーの手の動きをゲーム内のオブジェクトへ同期させます。
 
 ---
 
 ## 🛠 プロジェクト構造 (Repository Structure)
 
-本リポジトリは、環境のポータビリティ（持ち運びやすさ）を高めるため、フロント（Unity）とAI認識バックエンド（Python）が綺麗にセパレートされた並列構造を採用しています。
+本リポジトリは、環境のポータビリティ（持ち運びやすさ）を高めるため、フロント（Unity）とAI認識バックエンド（Python）がセパレートされた並列構造を採用しています。
 
 ```text
 BeatSaber-LikeGame/
 │
-├── .gitignore               # 一時キャッシュ（Library等）やvenv、.taskを弾くマスター設定
+├── .gitignore               # Unity-tmplate pythonの仮想環境やmediapipeのモデルを追加
 ├── README.md                # 本ドキュメント
 │
 ├── python-tracking/         # AIハンドトラッキング・バックエンド
-│   ├── hand_landmarker.task # 【要配置】MediaPipe最新の学習済みモデルアセット
-│   ├── hand_tracking_.py    # Tasks APIベースの高速トラッキング＆UDP送信スクリプト
+│   ├── hand_landmarker.task # MediaPipe最新の学習済みモデルアセット
+│   ├── hand_tracking_.py    # Tasks APIベースのトラッキング＆UDP送信スクリプト
 │   ├── requirements.txt     # 依存ライブラリ一覧 (OpenCV, numpy, mediapipe)
 │   └── venv/                # Pythonローカル仮想環境フォルダ（Git非追跡）
 │
 └── Project_Elucidator/      # Unityゲームプロジェクト (Unity 6 URP)
     ├── Assets/
-    │   ├── Scripts/         # 連携スクリプト群
-    │   │   ├── PythonController.cs # Unityの起動・停止にPythonを完全連動させるラッパー
-    │   │   ├── UDPReceiver.cs      # バックグラウンドスレッドでの高速JSONデシリアライズ
+    │   ├── Scripts/
+    │   │   ├── PythonController.cs # Unityの起動・停止にPythonを連動させるラッパー
+    │   │   ├── UDPReceiver.cs      # バックグラウンドスレッドでのJSONデシリアライズ
     │   │   └── TrackingManager.cs  # Quaternionを用いた3Dオブジェクトの座標・回転同期
     │   └── Scenes/
-    │       ├── TitleScene.unity    # メインタイトル画面（作成中）
-    │       └── SampleScene.unity   # トラッキング検証用本編シーン
+    │       ├── TitleScene.unity    # メインタイトル画面（未着手）
+    |       ├── GameScene.unity     # ゲーム本編用(未着手)
+    │       └── SampleScene.unity   # トラッキング検証用シーン
     └── ProjectSettings/
 ```
 ---
@@ -77,4 +78,4 @@ Models -> HandLandmarker (full)からダウンロード
   "isRight": true                 // 右手判定: true / 左手判定: false
 }
 ```
-Unity側では、`Quaternion.LookRotation(middleVec, -palmNormal)`を用いて、3Dモデルの正確な三次元回転角度を毎フレーム完全同期させています。
+Unity側では、`Quaternion.LookRotation(middleVec, -palmNormal)`を用いて、3Dモデルの正確な三次元回転角度を毎フレーム同期させています。
