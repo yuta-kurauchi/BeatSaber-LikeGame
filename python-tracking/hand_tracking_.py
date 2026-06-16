@@ -195,7 +195,6 @@ with vision.HandLandmarker.create_from_options(options) as landmarker:
                 "middleVec": middle_v.tolist(),
                 "isRight": isRight
             }
-            print(middle_v)
 
             # UDP送信
             send_to_unity(middle_v)
