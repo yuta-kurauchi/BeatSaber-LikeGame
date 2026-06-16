@@ -72,7 +72,7 @@ Models -> HandLandmarker (full)からダウンロード
 ## 📡 通信データ仕様 (UDP JSON Payload)
 ```JSON
 {
-  "wristPos": [0.0, 0.0, 0.0],    // 手首のリアルスケールスクリーン座標 (X, Y, Z)
+  "wristPos": [0.0, 0.0, 0.0],    // 手首の正規化スクリーン座標 (X, Y, Z)
   "palmNormal": [0.0, 0.0, 0.0],  // 掌の法線ベクトル（手の向き・傾き計算用）
   "middleVec": [0.0, 0.0, 0.0],   // 手首から中指へのベクトル（手の回転方向計算用）
   "isRight": true                 // 右手判定: true / 左手判定: false
