@@ -70,7 +70,8 @@ def to_numpy_array_screen(lm):
 
 # numpy配列を返す
 def to_numpy_array(lm):
-    return np.array([lm.x,lm.y,lm.z])
+    # 左下を0に
+    return np.array([-lm.x,-lm.y,lm.z])
 
 # 平滑化_指数移動平均（EMA）
 def ema_func(raw_vector, id, is_world=True):
@@ -194,10 +195,10 @@ with vision.HandLandmarker.create_from_options(options) as landmarker:
                 "middleVec": middle_v.tolist(),
                 "isRight": isRight
             }
-            print(data_dict)
+            print(middle_v)
 
             # UDP送信
-            send_to_unity(data_dict)
+            send_to_unity(middle_v)
         else:
             reSetVector()
 
