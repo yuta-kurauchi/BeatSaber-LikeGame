@@ -105,16 +105,12 @@ InitTestScene*.unity*
 # Auto-generated cache in Assets folder
 /[Aa]ssets/[Ss]ceneDependencyCache*
 
-# ==========================================
-# Python Virtual Environment (venv) & Tasks API
-# ==========================================
-# Pythonの仮想環境フォルダを完全に無視
+# Python Virtual Environment (venv)
 venv/
 ENV/
 env/
 
 # Tasks APIで今後必要になるAIモデルファイル（巨大なバイナリ）
-# ※これらはGitHubではなく、ローカルに各自ダウンロードして配置するためIgnoreします
 *.task
 
 # Pythonのキャッシュファイル
