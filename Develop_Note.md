@@ -72,7 +72,25 @@
 - **ビルド時のスタンドアロン化**: 最終リリース時、`python-tracking` フォルダ（`venv` および `hand_landmarker.task` 含む）をUnityの `StreamingAssets` フォルダ配下に内包し、ビルド後のゲーム単体で独立起動できるようにC#のパス指定ロジックを最適化する。
 - **入力システムのガード強化**: Pythonから送信される座標データが瞬間的に途切れた（`null` になった）場合でも、Unity側が `NullReferenceException` でクラッシュしないよう、`UDPReceiver.cs` および `TrackingManager.cs` での安全なnullガードを維持する。
 
+---
+
 ## 問題(Isuue)
 1. ハンドトラッキングの動きがosに依存して異なるバグが発生。
   - pythonのデータ処理において、カメラから読み込んだImageの長さを使ってスケーリングしていたことが原因。
   - 手首の位置トラッキングは正規化座標を用いて行うようにした。Unity側で、その値をゲーム画面のひで拡大し、スクリーン座標でトラキングさせる。
+2. UDP通信で問題発生。データ受信ができず、トラッキングの確認ができない。
+  ```cs
+  //ここから動いてない。
+  byte[] data = udpClient.Receive(ref remoteEndPoint);
+  ```
+  - `PythonController`は想定通り動いていたので、pythonの送信側に問題がある。
+  - pythonの関数とか整理するときに、デバッグでprint関数を使ってdata_dictを表示させたりしていた時に恐らく、send_to_unity(data_dict)の引数を変えてしまっていた。
+  ```python
+  end_to_unity(middle_v)
+  ```
+  になっていた。
+  pythonでの問題だと気づき、pythonのみ実行したとき、以下のようなエラーが出て気付いた。
+  ```terminal
+  UDP送信エラー: Object of type ndarray is not JSON serializable
+  ```
+3. 

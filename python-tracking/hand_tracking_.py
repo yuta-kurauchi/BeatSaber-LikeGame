@@ -197,7 +197,7 @@ with vision.HandLandmarker.create_from_options(options) as landmarker:
             }
 
             # UDP送信
-            send_to_unity(middle_v)
+            send_to_unity(data_dict)
         else:
             reSetVector()
 

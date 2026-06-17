@@ -101,7 +101,7 @@ public class UDPReceiver : MonoBehaviour
         {
             try
             {
-                Debug.Log(1);
+                Debug.Log(1); //ここまで出る。
                 // データの受信、バイト型の配列としてdataに受け取る。
                 // remoteEndPointをrefで渡すことで、送信元を取得?
                 byte[] data = udpClient.Receive(ref remoteEndPoint);

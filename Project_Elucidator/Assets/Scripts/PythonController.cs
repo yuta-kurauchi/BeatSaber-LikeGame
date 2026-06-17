@@ -9,9 +9,7 @@ public class PythonController : MonoBehaviour
 
     void Start()
     {
-        // 1. スクリプトのファイル名を実際のファイル名（hand_tracking_.py）に確実に合わせる
-        // Application.dataPath は「Project_Elucidator/Assets」を指すため、
-        // そこから2階層上がって「BeatSaber-LikeGame」に出てから「python-tracking」に入ります。
+        // Application.dataPath は「Project_Elucidator/Assets」を指す
         string scriptPath = Path.GetFullPath(Path.Combine(Application.dataPath, "../../python-tracking", "hand_tracking_.py"));
 
         string pythonExePath = "";
