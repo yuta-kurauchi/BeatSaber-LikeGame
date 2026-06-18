@@ -76,7 +76,7 @@ def to_numpy_array_screen(lm):
 # numpy配列を返す
 def to_numpy_array(lm):
     # 左下を0に
-    return np.array([-lm.x,-lm.y,lm.z])
+    return np.array([lm.x,lm.y,lm.z])
 
 # 平滑化_指数移動平均（EMA）
 def ema_func(raw_vector, id, is_world=True):
@@ -101,7 +101,7 @@ def reSetVector():
 # 相対ベクトルab
 def calc_relative_vector_ab(a_vec,b_vec):
     relative_vec = b_vec - a_vec
-    # relative_vec[1] *= -1  # y軸反転
+    relative_vec[1] *= -1  # y軸反転
     return relative_vec
 
 # 外積a×b
@@ -199,12 +199,15 @@ with vision.HandLandmarker.create_from_options(options) as landmarker:
             # 表示用の座標
             # to_pixel_coordinateにはnumpy配列
             wrist_pixel = to_pixel_coordinate(wrist_np)
+            wrist_pixel_down = (wrist_pixel[0], wrist_pixel[1] + 50)
 
             # 左右判定の確認用
             if label == "Right":
                 cv2.putText(image_bgr, "R", wrist_pixel, cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
             else:
                 cv2.putText(image_bgr, "L", wrist_pixel, cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+
+            cv2.putText(image_bgr, f"x:{palm_nv[0]:.4f},y:{palm_nv[1]:.4f}", wrist_pixel_down, cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
             
             # Unityが待っているデータ構造（JSON辞書）を作成
             data_dict = {
