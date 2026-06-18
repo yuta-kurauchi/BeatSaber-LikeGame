@@ -101,18 +101,18 @@ public class UDPReceiver : MonoBehaviour
         {
             try
             {
-                Debug.Log(1); //ここまで出る。
                 // データの受信、バイト型の配列としてdataに受け取る。
                 // remoteEndPointをrefで渡すことで、送信元を取得?
                 byte[] data = udpClient.Receive(ref remoteEndPoint);
                 // dataをjson形式に戻す
                 string jsonString = Encoding.UTF8.GetString(data);
                 /*更新中は外部からの操作(読み取りとか)を受け付けない。*/
-                Debug.Log(2);
                 // json形式をTrackingData classに変換
                 tempData = JsonConvert.DeserializeObject<TrackingData>(jsonString);
 
-                Debug.Log(3);
+                // 全て0になる。表示で丸め込まれている可能性大
+                // 通信でデータが丸め込まれている可能性もある。
+                // 桁指定で表示できるようにしたい。
                 Debug.Log(tempData.PalmNormal);
 
                 // スレッド内のデータなので同時にアクセスできないようにする
