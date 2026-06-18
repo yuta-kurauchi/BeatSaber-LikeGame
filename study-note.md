@@ -121,3 +121,17 @@ UnityEngine.Debug.Log("[Python] トラッキングプロセスを正常に終了
 それをUnityの`StreamingAssets`という特別なフォルダに入れることで、Unityのビルド時に同封してくれる。
 
 ---
+
+## OpenCV
+- 矢印の書き方
+```python
+cv2.arrowedLine(画像, 始点の座標, 終点の座標, 色(B, G, R), 線の太さ)
+```
+- キャストの必要性
+座標を示すときに、入れるのはピクセル座標である。
+そのピクセル座標に変換するときに、
+正規化座標 * heightとかで実装していたので、floatになってしまい以下のようなエラーが出た。
+```
+cv2.error: OpenCV(4.13.0) :-1: error: (-5:Bad argument) in function 'putText'
+```
+必ずキャストしてintに直してから入れるようにすべき

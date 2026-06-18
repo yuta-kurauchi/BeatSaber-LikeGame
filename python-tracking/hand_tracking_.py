@@ -17,6 +17,11 @@ from mediapipe.tasks.python import vision
 #     "isRight": true                 // 右手判定: true / 左手判定: false
 # }
 
+# 座標系の注意
+# OpenCVは左上が原点
+# MediaPipeは右上が原点
+# Unityのviewport座標は左下が原点
+
 
 # 通信用設定
 UNITY_HOST = "127.0.0.1"
@@ -49,7 +54,7 @@ def send_to_unity(message):
 # 指数移動平均（EMA）用設定
 alpha = 0.2
 world_smoothed_vector = {0: None, 1: None, 9: None, 17: None}
-screen_smoothed_vector = {0: None}
+screen_smoothed_vector = {0: None, 1:None, 9: None, 17: None}
 
 # numpy配列を返す
 def to_numpy_array_screen(lm):
@@ -92,6 +97,9 @@ def reSetVector():
     world_smoothed_vector[9] = None
     world_smoothed_vector[17] = None
     screen_smoothed_vector[0] = None
+    screen_smoothed_vector[1] = None
+    screen_smoothed_vector[9] = None
+    screen_smoothed_vector[17] = None
 
 # 相対ベクトルab
 def calc_relative_vector_ab(a_vec,b_vec):
@@ -102,6 +110,14 @@ def calc_relative_vector_ab(a_vec,b_vec):
 # 外積a×b
 def calc_cross_np(va, vb):
     return np.cross(va, vb)
+
+# pixel_coordinate
+# 正規化座標をピクセルサイズを用いてピクセル座標へ
+# 平滑化されたnumpyarrayが入ってくるので、座標調整のために、y軸反転してから、+ height
+def to_pixel_coordinate(normal):
+    px = int(normal[0] * width)
+    py = int(normal[1] * height) * -1 + height
+    return (px, py)
 
 # カメラ設定（0か1、環境に合わせて変更してください）
 # 開発者の場合、macでは1,windowsでは0
@@ -164,29 +180,53 @@ with vision.HandLandmarker.create_from_options(options) as landmarker:
             pinky_world = hand_world_landmarks[17]
 
 
-            # 平滑化
+            # 平滑化して、numpy配列で出力
             wrist_np = ema_func(to_numpy_array_screen(wrist_normal), 0, is_world=False)
+            thumb_np = ema_func(to_numpy_array_screen(thumb_normal), 1, is_world=False)
+            middle_np = ema_func(to_numpy_array_screen(middle_normal), 9, is_world=False)
+            pinky_np = ema_func(to_numpy_array_screen(pinky_normal), 17, is_world=False)
             wrist_world_np = ema_func(to_numpy_array(wrist_world), 0)
             thumb_world_np = ema_func(to_numpy_array(thumb_world), 1)
             middle_world_np = ema_func(to_numpy_array(middle_world), 9)
             pinky_world_np = ema_func(to_numpy_array(pinky_world), 17)
 
-            # ワールド座標の相対ベクトル(回転計算用)
+            # 相対ベクトル(回転計算用)
             thumb_v = calc_relative_vector_ab(wrist_world_np, thumb_world_np)
             middle_v = calc_relative_vector_ab(wrist_world_np, middle_world_np)
             pinky_v = calc_relative_vector_ab(wrist_world_np, pinky_world_np)
+            thumb_nv = calc_relative_vector_ab(wrist_np, thumb_np)
+            pinky_nv = calc_relative_vector_ab(wrist_np, pinky_np)
+
 
             # 左右判定と法線ベクトル計算
             label = handedness.category_name # "Left" or "Right"
             if label == "Right":
                 isRight = True
                 palm_nv = calc_cross_np(thumb_v, pinky_v)
+                palm_nv_screen = calc_cross_np(thumb_nv, pinky_nv)
             else:
                 isRight = False
                 palm_nv = calc_cross_np(pinky_v, thumb_v)
+                palm_nv_screen = calc_cross_np(pinky_nv, thumb_nv)
 
-            # 旧コードの描画処理の代わりに簡易テキスト表示
-            cv2.putText(image_bgr, f"isRight:{isRight}", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+            # 表示用の座標
+            # to_pixel_coordinateにはnumpy配列
+            wrist_pixel = to_pixel_coordinate(wrist_np)
+            middle_pixel = to_pixel_coordinate(middle_np)
+            palm_pos_np = palm_nv_screen * 10 + wrist_np
+            # wristからの相対ベクトル(手のひらの法線ベクトル)
+            palm_pixel = to_pixel_coordinate(palm_pos_np)
+
+            # 左右判定の確認用
+            if label == "Right":
+                cv2.putText(image_bgr, "R", wrist_pixel, cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+            else:
+                cv2.putText(image_bgr, "L", wrist_pixel, cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+
+            # ベクトルの向き確認用
+            cv2.arrowedLine(image_bgr, wrist_pixel, middle_pixel, (255, 0, 0), 3)
+            cv2.arrowedLine(image_bgr, wrist_pixel, palm_pixel, (0, 255, 0), 3)
+            
 
             # Unityが待っているデータ構造（JSON辞書）を作成
             data_dict = {
