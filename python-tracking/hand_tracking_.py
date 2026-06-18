@@ -54,7 +54,7 @@ def send_to_unity(message):
 # 指数移動平均（EMA）用設定
 alpha = 0.2
 world_smoothed_vector = {0: None, 1: None, 9: None, 17: None}
-screen_smoothed_vector = {0: None, 1:None, 9: None, 17: None}
+screen_smoothed_vector = {0: None}
 
 # numpy配列を返す
 def to_numpy_array_screen(lm):
@@ -97,9 +97,6 @@ def reSetVector():
     world_smoothed_vector[9] = None
     world_smoothed_vector[17] = None
     screen_smoothed_vector[0] = None
-    screen_smoothed_vector[1] = None
-    screen_smoothed_vector[9] = None
-    screen_smoothed_vector[17] = None
 
 # 相対ベクトルab
 def calc_relative_vector_ab(a_vec,b_vec):
@@ -172,19 +169,13 @@ with vision.HandLandmarker.create_from_options(options) as landmarker:
             # 座標を取得
             wrist_world = hand_world_landmarks[0]
             wrist_normal = hand_landmarks[0]
-            thumb_normal = hand_landmarks[1]
             thumb_world = hand_world_landmarks[1]
-            middle_normal = hand_landmarks[9]
             middle_world = hand_world_landmarks[9]
-            pinky_normal = hand_landmarks[17]
             pinky_world = hand_world_landmarks[17]
 
 
             # 平滑化して、numpy配列で出力
             wrist_np = ema_func(to_numpy_array_screen(wrist_normal), 0, is_world=False)
-            thumb_np = ema_func(to_numpy_array_screen(thumb_normal), 1, is_world=False)
-            middle_np = ema_func(to_numpy_array_screen(middle_normal), 9, is_world=False)
-            pinky_np = ema_func(to_numpy_array_screen(pinky_normal), 17, is_world=False)
             wrist_world_np = ema_func(to_numpy_array(wrist_world), 0)
             thumb_world_np = ema_func(to_numpy_array(thumb_world), 1)
             middle_world_np = ema_func(to_numpy_array(middle_world), 9)
@@ -194,8 +185,6 @@ with vision.HandLandmarker.create_from_options(options) as landmarker:
             thumb_v = calc_relative_vector_ab(wrist_world_np, thumb_world_np)
             middle_v = calc_relative_vector_ab(wrist_world_np, middle_world_np)
             pinky_v = calc_relative_vector_ab(wrist_world_np, pinky_world_np)
-            thumb_nv = calc_relative_vector_ab(wrist_np, thumb_np)
-            pinky_nv = calc_relative_vector_ab(wrist_np, pinky_np)
 
 
             # 左右判定と法線ベクトル計算
@@ -203,31 +192,20 @@ with vision.HandLandmarker.create_from_options(options) as landmarker:
             if label == "Right":
                 isRight = True
                 palm_nv = calc_cross_np(thumb_v, pinky_v)
-                palm_nv_screen = calc_cross_np(thumb_nv, pinky_nv)
             else:
                 isRight = False
                 palm_nv = calc_cross_np(pinky_v, thumb_v)
-                palm_nv_screen = calc_cross_np(pinky_nv, thumb_nv)
 
             # 表示用の座標
             # to_pixel_coordinateにはnumpy配列
             wrist_pixel = to_pixel_coordinate(wrist_np)
-            middle_pixel = to_pixel_coordinate(middle_np)
-            palm_pos_np = palm_nv_screen * 10 + wrist_np
-            # wristからの相対ベクトル(手のひらの法線ベクトル)
-            palm_pixel = to_pixel_coordinate(palm_pos_np)
 
             # 左右判定の確認用
             if label == "Right":
                 cv2.putText(image_bgr, "R", wrist_pixel, cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
             else:
                 cv2.putText(image_bgr, "L", wrist_pixel, cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
-
-            # ベクトルの向き確認用
-            cv2.arrowedLine(image_bgr, wrist_pixel, middle_pixel, (255, 0, 0), 3)
-            cv2.arrowedLine(image_bgr, wrist_pixel, palm_pixel, (0, 255, 0), 3)
             
-
             # Unityが待っているデータ構造（JSON辞書）を作成
             data_dict = {
                 "wristPos": wrist_np.tolist(),
