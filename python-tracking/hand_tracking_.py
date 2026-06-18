@@ -101,7 +101,6 @@ def reSetVector():
 # 相対ベクトルab
 def calc_relative_vector_ab(a_vec,b_vec):
     relative_vec = b_vec - a_vec
-    relative_vec[1] *= -1  # y軸反転
     return relative_vec
 
 # 外積a×b
@@ -196,6 +195,10 @@ with vision.HandLandmarker.create_from_options(options) as landmarker:
                 isRight = False
                 palm_nv = calc_cross_np(pinky_v, thumb_v)
 
+            # 外積計算してからy軸反転
+            palm_nv[1] *= -1
+            middle_v[1] *= -1
+            
             # 表示用の座標
             # to_pixel_coordinateにはnumpy配列
             wrist_pixel = to_pixel_coordinate(wrist_np)

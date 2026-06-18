@@ -37,7 +37,7 @@ public class TrackingManager : MonoBehaviour
         {
             Vector3 viewportPos = handData.WristPos;
             // zだけ変更,zがカメラからの距離を表す。
-            viewportPos.z = 5.0f;
+            viewportPos.z = 2.0f;
             _transform.position = _mainCamera.ViewportToWorldPoint(viewportPos);
             // 回転角を計算
             Quaternion baseRot = Quaternion.LookRotation(handData.MiddleVec, handData.PalmNormal);
