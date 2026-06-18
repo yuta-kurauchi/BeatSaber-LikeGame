@@ -40,3 +40,84 @@ IPEndPoint remoteEndPoint = new IPEndPoint(IPAddress.Any, 0);
 ## 同期処理
 - その処置が終わるまで次に進めない。
 - 別スレッドを使う。
+
+---
+
+## PythonController.cs
+
+### namespace
+System.Diagnostics : OSのプロセス用のクラスなど
+System.IO : ファイルシステム用のクラスなど
+
+### パスの構築
+```CS
+void Start()
+    {
+        // Application.dataPath は「Project_Elucidator/Assets」を指す
+        string scriptPath = Path.GetFullPath(Path.Combine(Application.dataPath, "../../python-tracking", "hand_tracking_.py"));
+    }
+```
+`Path.GetFullPath` : 絶対パスを生成
+`Path.Combine` : パスをOSのルール(Windowsなら`\`,Macなら`/`)に合わせて繋ぐ
+
+```CS
+string pythonExePath = "";
+#if UNITY_EDITOR_WIN
+        pythonExePath = Path.GetFullPath(Path.Combine(Application.dataPath, "../../python-tracking/venv/Scripts/python.exe"));
+#else
+        string macPath1 = Path.GetFullPath(Path.Combine(Application.dataPath, "../../python-tracking/venv/bin/python3"));
+        string macPath2 = Path.GetFullPath(Path.Combine(Application.dataPath, "../../python-tracking/venv/bin/python"));
+        pythonExePath = File.Exists(macPath1) ? macPath1 : macPath2;
+#endif
+```
+条件付きコンパイル(プリプロセッサディレクティブ)
+OSによって違うパスをそれぞれに合わせて代入できるようにしている。
+
+`? :`これは三項演算子というもので、macPath1があればそれで、なければmacPath2を代入
+```
+(条件)　? (trueの場合の値) : (falseの場合の値)
+```
+
+### 実行と終了
+
+```CS
+ProcessStartInfo startInfo = new ProcessStartInfo();
+startInfo.FileName = pythonExePath;
+startInfo.Arguments = $"\"{scriptPath}\"";
+startInfo.UseShellExecute = false;
+startInfo.CreateNoWindow = true;
+
+// カレントディレクトリをスクリプトの場所に固定する（.taskファイルを読み込めるようにするため）
+startInfo.WorkingDirectory = Path.GetDirectoryName(scriptPath);
+
+pythonProcess = Process.Start(startInfo); //実行
+```
+
+`ProcessStartInfo` : これはプロセスを起動するための情報を入力するための型
+- **ここがゲームでは重要**
+`UseShellExecute` = false : シェルを経由せず、直接実行可能ファイル（.exe）を起動。 
+`CreateNoWindow =ture` : コンソールを表示させない
+実行のたびにいちいちターミナルなどのウィンドウが出ないようにする。
+こういった設定をしておくことで、ゲームが中断されずに済む
+
+`WorkingDirectory` : スクリプトのパスをワークディレクトリに指定することで、pythonでパスを使う処理(tasksとか)も問題なく行える。
+
+```CS
+pythonProcess.Kill();
+pythonProcess.Dispose();
+UnityEngine.Debug.Log("[Python] トラッキングプロセスを正常に終了しました。");
+```
+`OnDestroy` : 再生停止時やシーン遷移時に自度で呼ばれる
+`kill` : プロセスを強制終了させる
+
+### スレッド(Thread)とプロセス(process)の違い
+- スレッド(Thread) 
+    1つのプログラムの中で同時に処理するためのもの。並列処理
+- プロセス(Process)
+    完全に別のプログラム
+
+### 最終的なビルド時のこのファイル(バックエンド)の扱い
+`PyInstaller` : これで、pythonのソースコードと、mediapipeなどのライブラリを一つの実行ファイルにする。
+それをUnityの`StreamingAssets`という特別なフォルダに入れることで、Unityのビルド時に同封してくれる。
+
+---

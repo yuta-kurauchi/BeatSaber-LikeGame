@@ -45,7 +45,7 @@ public class PythonController : MonoBehaviour
             startInfo.UseShellExecute = false;
             startInfo.CreateNoWindow = true;
             
-            // 【重要】カレントディレクトリをスクリプトの場所に固定する（.taskファイルを読み込めるようにするため）
+            // カレントディレクトリをスクリプトの場所に固定する（.taskファイルを読み込めるようにするため）
             startInfo.WorkingDirectory = Path.GetDirectoryName(scriptPath);
 
             UnityEngine.Debug.Log("[Python] UnityからPythonトラッキングプロセスを起動します...");
