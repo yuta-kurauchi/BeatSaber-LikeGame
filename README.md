@@ -78,4 +78,4 @@ Models -> HandLandmarker (full)からダウンロード
   "isRight": true                 // 右手判定: true / 左手判定: false
 }
 ```
-Unity側では、`Quaternion.LookRotation(middleVec, -palmNormal)`を用いて、3Dモデルの正確な三次元回転角度を毎フレーム同期させています。
+Unity側では、`Quaternion.LookRotation(middleVec, palmNormal)`を用いて、3Dモデルの正確な三次元回転角度を毎フレーム同期させています。
