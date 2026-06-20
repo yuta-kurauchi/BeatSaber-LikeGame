@@ -52,7 +52,7 @@ def send_to_unity(message):
         return False
 
 # 指数移動平均（EMA）用設定
-alpha = 0.2
+alpha = 0.25
 world_smoothed_vector = {0: None, 1: None, 9: None, 17: None}
 screen_smoothed_vector = {0: None}
 
@@ -117,10 +117,17 @@ def to_pixel_coordinate(normal):
 
 # カメラ設定（0か1、環境に合わせて変更してください）
 # 開発者の場合、macでは1,windowsでは0
+
+# カメラ設定用
+cap_width = 1280
+cap_height = 720
+
 if os.name == 'nt':
     cap = cv2.VideoCapture(0)
 else:
     cap = cv2.VideoCapture(1)
+cap.set(cv2.CAP_PROP_FRAME_WIDTH, cap_width)
+cap.set(cv2.CAP_PROP_FRAME_HEIGHT, cap_height)
 init_udp_socket()
 
 # MediaPipe Tasks APIの初期化設定
